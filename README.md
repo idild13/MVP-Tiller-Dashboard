@@ -57,13 +57,13 @@ The goal of this project was to analyze **raw Tiller by SumUp data** to build a 
 ---
 
 ## 🔹 Dashboard Preview
-(Add screenshots of your Tiller dashboards here)
 
-![Seasonality Dashboard](./screenshots/seasonality_dashboard.png)  
-![Customer & Staff Analytics](./screenshots/customer_staff_dashboard.png)  
-![Menu Performance](./screenshots/menu_performance_dashboard.png)  
+Here are some snapshots of the MVP Tiller Dashboard:
 
-**📌 Explore the live dashboard:** [Tiller Restaurant Dashboard](https://lookerstudio.google.com/reporting/46e3234e-0289-4347-8875-0275309b1e6f)
+<img src="./screenshots/seasonality.png" alt="Seasonality Dashboard" width="400" />  <img src="./screenshots/customers.png" alt="Customer & Staff Analytics" width="365" /> 
+<img src="./screenshots/service.png" alt="Service Type Analytics" width="400" /> <img src="./screenshots/menu_performance_1.png" alt="Menu Category Performance" width="400" />
+
+### 📌 **Explore the live dashboard:** [Tiller Restaurant Dashboard](https://lookerstudio.google.com/reporting/46e3234e-0289-4347-8875-0275309b1e6f)
 
 ---
 
