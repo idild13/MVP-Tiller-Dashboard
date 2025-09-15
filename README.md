@@ -82,8 +82,7 @@ Here are some snapshots of the MVP Tiller Dashboard:
 ---
 
 ## 🔹 How to Explore
-- Download the `.csv` or `.pbix` files from this repo to explore in Looker Studio / Power BI / Google Sheets.  
-- Or interact with the **live dashboard** here: [🔗 Tiller Dashboard](https://www.notion.so/MVP-Tiller-Dashboard-26982c849ba880778458c2269df43d19?source=copy_link)  
+Interact with the **live dashboard** here: [🔗 Tiller Dashboard](https://www.notion.so/MVP-Tiller-Dashboard-26982c849ba880778458c2269df43d19?source=copy_link)  
 
 ---
 
