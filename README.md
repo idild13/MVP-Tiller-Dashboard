@@ -86,4 +86,12 @@ Here are some snapshots of the MVP Tiller Dashboard:
 
 ---
 
-👩‍💻 *This project was developed collaboratively during a Data Analytics Bootcamp at Le Wagon. My contribution focused on **cleaning and transforming raw data, and creating customer & operational insights**, while teammates explored other business areas such as sales and service analysis.*
+## 🔹 Personal Contribution
+👩‍💻 *This project was developed collaboratively during a Data Analytics Bootcamp at Le Wagon. My contribution focused on **cleaning and transforming raw order_line data in BigQuery and Google Sheets, as well as building dashboards and generating insights on menu category performance**, while teammates explored other business areas such as sales and service analysis.*
+
+---
+## 🔹 Team
+- Simone Del Giudice – ✉️ sim.delgiu@gmail.com
+- Idil Dorak – ✉️ idildorak@gmail.com
+- Alba Castillo – ✉️ albacastillo90@gmail.com
+- Sebastião Mesquita – ✉️ sebastiaokmesquita@msn.com
