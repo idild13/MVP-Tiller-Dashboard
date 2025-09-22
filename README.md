@@ -3,7 +3,7 @@
 ## 🔹 Problem Statement
 Restaurants operate in a fast-paced, competitive environment with thin margins. While they generate large volumes of raw operational and transactional data, they rarely leverage analytics to optimize performance, staffing, or revenue.  
 
-The goal of this project was to analyze **raw Tiller by SumUp data** and deliver a **Minimum Viable Product (MVP)** — an interactive dashboard prototype enabling restaurant owners to **visualize, understand, and interact with their data** to support smarter, data-driven business decisions.
+The goal of this project was to analyze **Tiller by SumUp data** and deliver a **Minimum Viable Product (MVP)** — an interactive dashboard prototype enabling restaurant owners to **visualize, understand, and interact with their data** to support smarter, data-driven business decisions.
 
 ---
 
