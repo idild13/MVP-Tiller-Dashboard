@@ -1,9 +1,9 @@
-# 📊 Tiller MVP Restaurant Dashboard
+# 📊 Tiller by SumUp — MVP Restaurant Dashboard
 
 ## 🔹 Problem Statement
 Restaurants operate in a fast-paced, competitive environment with thin margins. While they generate large volumes of raw operational and transactional data, they rarely leverage analytics to optimize performance, staffing, or revenue.  
 
-The goal of this project was to analyze **raw Tiller by SumUp data** to build a **Minimum Viable Product (MVP)** — an interactive dashboard prototype allowing restaurant owners to **visualize, understand, and interact with their own data**, supporting data-driven business decisions.
+The goal of this project was to analyze **raw Tiller by SumUp data** and deliver a **Minimum Viable Product (MVP)** — an interactive dashboard prototype enabling restaurant owners to **visualize, understand, and interact with their data** to support smarter, data-driven business decisions.
 
 ---
 
@@ -15,12 +15,17 @@ The goal of this project was to analyze **raw Tiller by SumUp data** to build a 
      - Correcting data types  
      - Removing duplicates  
      - Standardizing formats  
-   - **Joined multiple tables** (orders, order lines, store data, menu categories) to create a cohesive dataset ready for analysis.  
-   - Performed minor additional transformations in **Google Sheets** to prepare for visualization.  
+   - **Joined multiple tables** (orders, order lines, store data) to create a cohesive dataset ready for analysis.  
+   - Performed additional transformations in **Google Sheets** to refine menu categories:
+     - Reduced 410 unique free-text entries into 30 standardized categories across 21 clients for consistent analysis. 
+     - 📑 Source: [Tiller_Order_Line_Categories](https://docs.google.com/spreadsheets/d/15_J4CYN65zrXH_wnfmNabcuE18KIbrpEReLaBSnFrKM/edit?usp=sharing)
+   - Built a new BigQuery table for co-occurrence analysis of categories per store.
+     - 📑 Source: [Category Co-occurence per Store](https://docs.google.com/spreadsheets/d/1Y6oKKEPObcDCUJI9FXeTibOZrgUOgLLMlZmTAXuNpqU/edit?usp=sharing)
+     - [View SQL Queries](SQL_cleaning_transformations_Idil_Dorak) for full SQL query documentation by Idil Dorak.
 
 2. **Exploratory Data Analysis (EDA)**  
    - Analyzed seasonality, peak hours, revenue trends, customer attendance, and staff workload.  
-   - Examined menu performance and identified top-selling items and combinations.  
+   - Examined menu performance and identified top-selling items and combinations.
 
 3. **Dashboard Development**  
    - Built interactive dashboards in **Looker Studio**.  
@@ -29,7 +34,8 @@ The goal of this project was to analyze **raw Tiller by SumUp data** to build a 
 
 4. **Business Insights & Recommendations**  
    - Provided insights on seasonal trends, staffing optimization, and menu performance.  
-   - Suggested data-driven operational improvements and strategic decisions.  
+   - Suggested data-driven operational improvements and strategic decisions.
+   - Recommended using dropdown menus with predefined categories to avoid free-text inconsistencies in staff data entry.
 
 ---
 
@@ -51,8 +57,9 @@ The goal of this project was to analyze **raw Tiller by SumUp data** to build a 
 3. **Service Type Analysis**:  
    - Patterns for dine-in, take-away, and delivery services inform operational strategy.  
 
-4. **Menu Performance**:  
-   - Highlighted best- and worst-performing items; identified opportunities for upselling and menu optimization.  
+4. **Menu Category Performance**:  
+   - Highlighted best- and worst-performing items; identified opportunities for upselling and menu optimization.
+   - Found that **“Uncategorized” was among the top-performing groups**, underlining the need for standardized data entry.
 
 ---
 
@@ -82,7 +89,8 @@ Here are some snapshots of the MVP Tiller Dashboard:
 ---
 
 ## 🔹 How to Explore
-:bar_chart: Interact with the **live dashboard** here: [🔗 Tiller Dashboard](https://www.notion.so/MVP-Tiller-Dashboard-26982c849ba880778458c2269df43d19?source=copy_link)  
+:bar_chart: Interact with the **live dashboard** here: [🔗 Tiller Dashboard](https://lookerstudio.google.com/reporting/46e3234e-0289-4347-8875-0275309b1e6f)  
+🏠: Explore the main collaborative repository here: [🔗 The Main Repository](https://github.com/sdelgiu/MVP-Tiller-by-SumUp)
 
 ---
 
