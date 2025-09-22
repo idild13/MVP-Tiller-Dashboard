@@ -19,7 +19,7 @@ The goal of this project was to analyze **raw Tiller by SumUp data** and deliver
    - Performed additional transformations in **Google Sheets** to refine menu categories:
      - Reduced 410 unique free-text entries into 30 standardized categories across 21 clients for consistent analysis. 
      - 📑 Source: [Tiller_Order_Line_Categories](https://docs.google.com/spreadsheets/d/15_J4CYN65zrXH_wnfmNabcuE18KIbrpEReLaBSnFrKM/edit?usp=sharing)
-   - Built a new BigQuery table for co-occurrence analysis of categories per store.
+   - Built a new BigQuery table for cross-sell analysis (co-occurrence analysis of categories per store).
      - 📑 Source: [Category Co-occurence per Store](https://docs.google.com/spreadsheets/d/1Y6oKKEPObcDCUJI9FXeTibOZrgUOgLLMlZmTAXuNpqU/edit?usp=sharing)
      - [View SQL Queries](SQL_cleaning_transformations_Idil_Dorak) for full SQL query documentation by Idil Dorak.
 
@@ -29,7 +29,7 @@ The goal of this project was to analyze **raw Tiller by SumUp data** and deliver
 
 3. **Dashboard Development**  
    - Built interactive dashboards in **Looker Studio**.  
-   - Added drill-downs and filters by service type, time period, and menu category.  
+   - Added drill-downs and filters by store, service type, time period, day type, and menu category.  
    - Designed visualizations for KPIs and operational metrics to guide actionable decisions.  
 
 4. **Business Insights & Recommendations**  
@@ -57,7 +57,7 @@ The goal of this project was to analyze **raw Tiller by SumUp data** and deliver
 3. **Service Type Analysis**:  
    - Patterns for dine-in, take-away, and delivery services inform operational strategy.  
 
-4. **Menu Category Performance**:  
+4. **Menu Category Performance** *(my personal focus)*:  
    - Highlighted best- and worst-performing items; identified opportunities for upselling and menu optimization.
    - Found that **“Uncategorized” was among the top-performing groups**, underlining the need for standardized data entry.
 
