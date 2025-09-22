@@ -1,1 +1,345 @@
+# SQL Queries Documentation – Tiller by SumUp MVP
 
+This document contains all key SQL queries used in the Tiller MVP project by Idil Dorak.  
+They are grouped by purpose, with explanations, best practices, and rule-of-thumb guidelines.  
+
+---
+
+## 1️⃣ Data Consistency Checks
+
+### Compare `order_data` vs `order_line`
+Count how many `id_order` values match across the two tables, and identify which ones exist only in one table:
+```sql
+WITH order_line_unique AS (
+  SELECT DISTINCT id_order
+  FROM `intro-to-sql-project-1.Tiller.order_line`
+)
+SELECT
+  CASE
+    WHEN l.id_order IS NOT NULL AND d.id_order IS NOT NULL THEN 'Match'
+    WHEN l.id_order IS NOT NULL AND d.id_order IS NULL THEN 'Only in order_line'
+    WHEN l.id_order IS NULL AND d.id_order IS NOT NULL THEN 'Only in order_data'
+  END AS match_status,
+  COUNT(*) AS count_orders
+FROM order_line_unique l
+FULL OUTER JOIN `intro-to-sql-project-1.Tiller.order_data` d
+  ON l.id_order = d.id_order
+GROUP BY match_status;
+
+### Compare order_data vs payment_data
+WITH order_line_unique AS (
+  SELECT DISTINCT id_order
+  FROM `intro-to-sql-project-1.Tiller.payment_data`
+)
+SELECT
+  CASE
+    WHEN l.id_order IS NOT NULL AND d.id_order IS NOT NULL THEN 'Match'
+    WHEN l.id_order IS NOT NULL AND d.id_order IS NULL THEN 'Only in order_line'
+    WHEN l.id_order IS NULL AND d.id_order IS NOT NULL THEN 'Only in order_data'
+  END AS match_status,
+  COUNT(*) AS count_orders
+FROM order_line_unique l
+FULL OUTER JOIN `intro-to-sql-project-1.Tiller.order_data` d
+  ON l.id_order = d.id_order
+GROUP BY match_status;
+
+## 2️⃣ Unmatched Records
+
+### Orders in order_line but not in order_data
+SELECT DISTINCT l.id_order
+FROM `intro-to-sql-project-1.Tiller.order_line` l
+LEFT JOIN `intro-to-sql-project-1.Tiller.order_data` d
+  ON l.id_order = d.id_order
+WHERE d.id_order IS NULL;
+
+### Orders in order_data but not in order_line
+SELECT DISTINCT d.id_order
+FROM `intro-to-sql-project-1.Tiller.order_data` d
+LEFT JOIN `intro-to-sql-project-1.Tiller.order_line` l
+  ON l.id_order = d.id_order
+WHERE l.id_order IS NULL;
+
+## 3️⃣ Summary
+	•	order_data has 1,658 extra id_orders not present in order_line.
+	•	order_line has no extra IDs (all its id_orders exist in order_data).
+	•	order_data.id_order is the primary key and safe to join on.
+	•	order_line.id_order can contain duplicates (multiple lines per order).
+
+## 4️⃣ Join Strategies
+
+Since every id_order in order_line exists in order_data, and only a few (1,658) exist in order_data but not in order_line, your join depends on the use case.
+
+### Orders that have order lines → INNER JOIN
+SELECT
+  l.*,
+  d.*
+FROM `intro-to-sql-project-1.Tiller.order_line` l
+INNER JOIN `intro-to-sql-project-1.Tiller.order_data` d
+  ON l.id_order = d.id_order;
+
+### Include all orders from order_data → RIGHT JOIN / FULL OUTER JOIN
+SELECT
+  l.*,
+  d.*
+FROM `intro-to-sql-project-1.Tiller.order_line` l
+RIGHT JOIN `intro-to-sql-project-1.Tiller.order_data` d
+  ON l.id_order = d.id_order;
+
+### Mark orders without order lines → LEFT JOIN
+SELECT
+  d.id_order,
+  l.id_order_line,
+  CASE 
+    WHEN l.id_order IS NULL THEN 'No order_line'
+    ELSE 'Has order_line'
+  END AS order_line_status,
+  d.id_store,
+  d.id_table,
+  d.id_waiter,
+  d.id_device,
+  d.date_opened AS order_date_opened,
+  d.date_closed AS order_date_closed,
+  l.date_opended AS line_date_opended,
+  l.date_created AS line_date_created,
+  d.m_nb_customer,
+  l.m_quantity,
+  d.m_cached_payed,
+  d.m_cached_price,
+  l.m_unit_price,
+  l.m_unit_price_exc_vat,
+  l.m_total_price_inc_vat,
+  l.m_total_price_exc_vat,
+  l.m_tax_percent,
+  l.m_discount_amount,
+  d.dim_status AS order_dim_status,
+  l.dim_status AS line_dim_status,
+  d.dim_source,
+  l.dim_type,
+  l.dim_category_translated,
+  l.dim_name_translated,
+  l.dim_feature_type,
+  l.dim_unit_measure,
+  l.dim_unit_measure_display
+FROM `intro-to-sql-project-1.Tiller.order_data` d
+LEFT JOIN `intro-to-sql-project-1.Tiller.order_line` l
+  ON d.id_order = l.id_order;
+
+## 5️⃣ Payment Validation
+
+### Orders in order_data missing from payment_data
+SELECT d.*
+FROM `intro-to-sql-project-1.Tiller.order_data` d
+LEFT JOIN `intro-to-sql-project-1.Tiller.payment_data` l
+  ON d.id_order = l.id_order
+WHERE l.id_order IS NULL;
+
+### Clean orders with null order_line_id but payment info
+SELECT *
+FROM `tiller-project-470114.Staging.order_data left joined order_line`
+WHERE m_cached_payed IS NOT NULL;
+
+## 6️⃣ Intermediate Tables
+
+### Create idil_order_line
+SELECT 
+   DATE(created_date) AS full_date_created,
+   FORMAT_DATE('%Y-%m', DATE(date_created)) AS year_month_created,
+   id_order_line,
+   id_order,
+   m_quantity,
+   m_unit_price,
+   m_unit_price_exc_vat,
+   m_total_price_inc_vat,
+   m_total_price_exc_vat,
+   m_discount_amount,
+   dim_type,
+   IFNULL(dim_feature_type, 'unknown') AS dim_feature_type,
+   dim_category_translated,
+   dim_name_translated
+FROM `tiller-project-470114.Intermediate.order_line_idil`;
+
+### Round float values
+SELECT 
+   full_date_created,
+   year_month_created,
+   id_order_line,
+   id_order,
+   m_quantity,
+   ROUND(m_unit_price, 2) AS m_unit_price,
+   ROUND(m_unit_price_exc_vat, 2) AS m_unit_price_exc_vat,
+   ROUND(m_total_price_inc_vat, 2) AS m_total_price_inc_vat,
+   ROUND(m_total_price_exc_vat, 2) AS m_total_price_exc_vat,
+   ROUND(m_discount_amount, 2) AS m_discount_amount,
+   dim_type,
+   dim_feature_type,
+   dim_category_translated,
+   dim_name_translated
+FROM `tiller-project-470114.Intermediate.order_line_idil`;
+
+## Join Intermediate.order_line_idil with order_data
+SELECT
+  a.id_store,
+  a.order_type,
+  b.*
+FROM `tiller-project-470114.Intermediate.order_line_idil` a
+LEFT JOIN `tiller-project-470114.Mart.order_data_price_alba` b
+  ON a.id_order = b.id_order;
+
+## 7️⃣ Categorization
+Categories were re-grouped into **30 categories** [Tiller_Order_Line_Categories](https://docs.google.com/spreadsheets/d/15_J4CYN65zrXH_wnfmNabcuE18KIbrpEReLaBSnFrKM/edit?usp=sharing)
+
+SELECT
+ a.*,
+ b.dim_category
+FROM `Intermediate.order_line_with_storeID_and_OrderType_Idil` a
+LEFT JOIN `Intermediate.new_category_names_idil` b
+  ON a.dim_category_translated = b.dim_category_translated;
+
+Saved as final_order_line_idil.
+
+## 8️⃣ Final Mart Table Enhancements
+
+### Restore date_created
+SELECT
+  a.date_created,
+  b.id_store,
+  b.id_order_line,
+  b.id_order,
+  b.order_type,
+  b.m_quantity,
+  b.m_unit_price,
+  b.m_total_price_inc_vat,
+  b.dim_category
+FROM `Mart.final_order_line_idil` b
+LEFT JOIN `Staging.order_line_filter_order_id_sebi` a
+USING(id_order_line);
+
+### Extract hour, day, month, year
+SELECT
+  date_created,
+  DATE(date_created) AS order_date,
+  EXTRACT(HOUR   FROM date_created) AS order_hour,
+  EXTRACT(DAY    FROM date_created) AS order_day,
+  EXTRACT(MONTH  FROM date_created) AS order_month,
+  EXTRACT(YEAR   FROM date_created) AS order_year,
+  id_store,
+  id_order_line,
+  id_order,
+  order_type,
+  m_quantity,
+  m_unit_price,
+  m_total_price_inc_vat,
+  dim_category
+FROM `Mart.final_order_line_idil`;
+
+### Add quarter & minute
+SELECT
+  date_created,
+  order_date,
+  EXTRACT(MINUTE FROM date_created) AS order_minute,
+  order_hour,
+  order_day,
+  order_month,
+  order_year,
+  CONCAT('Q', CAST(EXTRACT(QUARTER FROM order_date) AS STRING), ' ', CAST(EXTRACT(YEAR FROM order_date) AS STRING)) AS quarter_year,
+  EXTRACT(YEAR FROM order_date)*10 + EXTRACT(QUARTER FROM order_date) AS quarter_sort,
+  id_store,
+  id_order_line,
+  id_order,
+  order_type,
+  m_quantity,
+  m_unit_price,
+  m_total_price_inc_vat,
+  dim_category
+FROM `Mart.final_order_line_idil`;
+
+### Date range
+SELECT
+  MAX(order_date), -- 2020-11-18
+  MIN(order_date)  -- 2015-10-22
+FROM `Mart.final_order_line_idil`;
+
+### Add meal periods
+SELECT
+  date_created,
+  order_date,
+  EXTRACT(MINUTE FROM date_created) AS order_minute,
+  order_hour,
+  order_day,
+  order_month,
+  order_year,
+  quarter_year,
+  quarter_sort,
+  CASE
+    WHEN TIME(order_hour, order_minute, 0) BETWEEN TIME(6,0,0)   AND TIME(7,59,59)  THEN 'Early Breakfast'
+    WHEN TIME(order_hour, order_minute, 0) BETWEEN TIME(8,0,0)   AND TIME(10,59,59) THEN 'Late Breakfast / Brunch'
+    WHEN TIME(order_hour, order_minute, 0) BETWEEN TIME(11,0,0)  AND TIME(14,30,0)  THEN 'Lunch'
+    WHEN TIME(order_hour, order_minute, 0) BETWEEN TIME(14,31,0) AND TIME(16,59,59) THEN 'Afternoon / Snack'
+    WHEN TIME(order_hour, order_minute, 0) BETWEEN TIME(17,0,0)  AND TIME(17,59,59) THEN 'Aperitif / Early Dinner'
+    WHEN TIME(order_hour, order_minute, 0) BETWEEN TIME(18,0,0)  AND TIME(21,30,0)  THEN 'Dinner Peak'
+    ELSE 'Late Night / Nightcap'
+  END AS meal_period,
+  id_store,
+  id_order_line,
+  id_order,
+  order_type,
+  m_quantity,
+  m_unit_price,
+  m_total_price_inc_vat,
+  dim_category
+FROM `Mart.final_order_line_idil`;
+
+### Add day type
+SELECT
+  date_created,
+  order_date,
+  order_minute,
+  order_hour,
+  order_day,
+  order_month,
+  order_year,
+  quarter_year,
+  quarter_sort,
+  meal_period,
+  CASE
+    WHEN EXTRACT(DAYOFWEEK FROM date_created AT TIME ZONE 'Europe/Paris') IN (1, 7) THEN 'Weekend'
+    ELSE 'Weekday'
+  END AS day_type,
+  id_store,
+  id_order_line,
+  id_order,
+  order_type,
+  m_quantity,
+  m_unit_price,
+  m_total_price_inc_vat,
+  dim_category
+FROM `Mart.final_order_line_idil`;
+
+## 9️⃣ Cross-Sell Analysis
+
+Generate pairs of product categories that co-occur in the same order (per store).
+Saved as final_category_co-occurrence_with_storeID_Idil.
+
+WITH categories_per_order AS (
+  SELECT DISTINCT 
+    id_store,
+    id_order, 
+    dim_category
+  FROM your_table
+),
+pairs AS (
+  SELECT
+    a.id_store,
+    a.dim_category AS category_a,
+    b.dim_category AS category_b,
+    COUNT(*) AS co_occurrence_count
+  FROM categories_per_order a
+  JOIN categories_per_order b
+    ON a.id_store = b.id_store
+   AND a.id_order = b.id_order
+   AND a.dim_category < b.dim_category
+  GROUP BY a.id_store, a.dim_category, b.dim_category
+)
+SELECT *
+FROM pairs
+ORDER BY id_store, co_occurrence_count DESC;
